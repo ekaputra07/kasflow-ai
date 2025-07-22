@@ -1,5 +1,8 @@
 deps:
-	uv lock && uv sync
+	uv sync
+
+test:
+	uv run pytest
 
 run:
-	uv run kasflow/main.py
+	uv run kasflow

@@ -1,10 +1,12 @@
 import os
 from dotenv import load_dotenv
 
-from bots import poller_bot
-from handler import handlers
+from kasflow.bots import poller_bot
+from kasflow.handler import handlers
 
-if __name__ == "__main__":
-    load_dotenv()
+load_dotenv()
+
+
+def run():
     token = os.getenv("TELEGRAM_BOT_TOKEN")
     poller_bot.run(token, handlers)
