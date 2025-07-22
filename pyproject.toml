@@ -6,13 +6,13 @@ readme = "README.md"
 requires-python = ">=3.11"
 dependencies = [
     "python-telegram-bot==22.3",
-    "python-dotenv==1.1.1",
-    "langgraph>=0.5.4",
+    "langgraph==0.5.4",
     "langchain-openai==0.3.28",
     "langchain-core==0.3.70",
     "langchain-community==0.3.27",
     "trustcall==0.0.39",
     "pydantic==2.11.7",
+    "pydantic-settings>=2.10.1",
 ]
 
 [dependency-groups]
@@ -25,8 +25,5 @@ dev = [
 kasflow = "kasflow.main:run"
 
 [build-system]
-requires = ["setuptools>=78.1.0", "wheel>=0.45.1"]
-build-backend = "setuptools.build_meta"
-
-[tool.setuptools]
-py-modules = ["kasflow"]
+requires = ["uv_build>=0.8.0,<0.9.0"]
+build-backend = "uv_build"
