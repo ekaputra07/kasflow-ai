@@ -9,7 +9,6 @@ dependencies = [
     "langgraph==0.5.4",
     "langchain-openai==0.3.28",
     "langchain-core==0.3.70",
-    "langchain-community==0.3.27",
     "trustcall==0.0.39",
     "pydantic==2.11.7",
     "pydantic-settings>=2.10.1",
