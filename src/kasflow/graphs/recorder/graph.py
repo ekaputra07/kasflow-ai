@@ -8,7 +8,7 @@ from kasflow.graphs import BaseGraph
 from .models import ExpenseList, RecorderState
 
 
-_llm = _llm = ChatOpenAI(
+_llm = ChatOpenAI(
     model="gpt-4.1-mini",
     temperature=0.0,
     max_tokens=1000,
