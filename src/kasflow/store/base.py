@@ -1,17 +1,16 @@
 from abc import ABC, abstractmethod
-
 from kasflow.models import Expense
 
 
-class BaseStore(ABC):
+class AsyncBaseStore(ABC):
     @abstractmethod
-    def list_expense(self) -> list[Expense]:
+    async def list_expense(self) -> list[Expense]:
         pass
 
     @abstractmethod
-    def create_expense(self, expense: Expense | list[Expense]):
+    async def create_expense(self, expense: Expense | list[Expense]):
         pass
 
     @abstractmethod
-    def get_expense(self, expense_id: int) -> Expense | None:
+    async def get_expense(self, expense_id: int) -> Expense | None:
         pass

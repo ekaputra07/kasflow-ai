@@ -9,7 +9,9 @@ class Settings(BaseSettings):
     log_level: str = "INFO"
     bot_token: str
     bot_name: str = "kasflow"
-    greeting_message: str = "Hello! I'm {bot_name}, your personal expense tracker."
+    greeting_message: str = (
+        "Hello! I'm {bot_name}, your personal expense tracker."
+    )
     openai_api_key: str
 
     class Config:

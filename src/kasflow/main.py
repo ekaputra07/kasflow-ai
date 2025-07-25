@@ -1,5 +1,5 @@
 import logging
-from kasflow.bots import poller_bot
+from telegram.ext import ApplicationBuilder
 from kasflow.handlers import all
 from kasflow.conf import settings
 
@@ -7,4 +7,6 @@ logging.basicConfig(level=getattr(logging, settings.log_level.upper()))
 
 
 def run():
-    poller_bot.run(settings.bot_token, all)
+    app = ApplicationBuilder().token(settings.bot_token).build()
+    app.add_handlers(all)
+    app.run_polling()

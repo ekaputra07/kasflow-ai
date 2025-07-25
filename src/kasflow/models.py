@@ -1,4 +1,3 @@
-from decimal import Decimal
 from enum import Enum
 from typing import Optional
 from datetime import datetime
@@ -30,12 +29,26 @@ class Expense(BaseModel):
 
     model_config = ConfigDict(use_enum_values=True)
 
-    id: Optional[int] = Field(description="Unique identifier for the expense", default=None)
-    amount: Decimal = Field(description="The monetary amount of the expense", ge=0, decimal_places=2)
-    category: ExpenseCategory = Field(description="The category this expense belongs to")
-    description: str = Field(description="A brief description of the expense", min_length=1, max_length=200)
-    created: Optional[datetime] = Field(description="The date and time the expense was created", default=None)
-    updated: Optional[datetime] = Field(description="The date and time the expense was updated", default=None)
+    id: Optional[int] = Field(
+        description="Unique identifier for the expense", default=None
+    )
+    amount: float = Field(
+        description="The monetary amount of the expense", ge=0.0
+    )
+    category: ExpenseCategory = Field(
+        description="The category this expense belongs to"
+    )
+    description: str = Field(
+        description="A brief description of the expense",
+        min_length=1,
+        max_length=200,
+    )
+    created: Optional[datetime] = Field(
+        description="The date and time the expense was created", default=None
+    )
+    updated: Optional[datetime] = Field(
+        description="The date and time the expense was updated", default=None
+    )
 
     @field_validator("description")
     @classmethod
