@@ -13,3 +13,14 @@ def read_text_file(path: str, base_dir: Path = BASE_DIR) -> str:
     filename = base_dir / path
     with open(filename) as file:
         return file.read()
+
+
+def db_path(id: str | int) -> str:
+    """
+    Return the path to the database file for the given user ID.
+    Args:
+        id (str | int): The user/group ID.
+    Returns:
+        str: The path to the database file.
+    """
+    return f"{BASE_DIR}/data/db/{id}.db"

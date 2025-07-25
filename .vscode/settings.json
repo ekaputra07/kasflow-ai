@@ -1,0 +1,19 @@
+{
+    "[python]": {
+        "editor.defaultFormatter": "charliermarsh.ruff",
+        "editor.formatOnType": true,
+        "editor.codeActionsOnSave": {
+            "source.fixAll": "explicit"
+        },
+        "editor.formatOnSave": true
+    },
+    "ruff.organizeImports": false,
+    "ruff.configuration": {
+        "lint": {
+            "unfixable": [
+                "F401"
+            ]
+        }
+    },
+    "ruff.lineLength": 130,
+}
