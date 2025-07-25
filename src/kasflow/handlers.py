@@ -4,19 +4,11 @@ from telegram.ext import ContextTypes, CommandHandler, MessageHandler
 from telegram.ext import filters
 
 from kasflow.conf import settings
-from kasflow.utils import db_path
+from kasflow.utils import db_path, format_currency
 from kasflow.store.duckdb import DuckDBStore
 from kasflow.graphs.recorder import RecorderGraph, RecorderState
 
 logger = logging.getLogger(__name__)
-
-
-def format_currency(amount: float) -> str:
-    """Format currency with optional decimal places."""
-    if amount % 1 == 0:
-        return f"{amount:,.0f}"
-    else:
-        return f"{amount:,.2f}"
 
 
 async def start(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:

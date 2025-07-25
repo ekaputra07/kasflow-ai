@@ -24,3 +24,11 @@ def db_path(id: str | int) -> str:
         str: The path to the database file.
     """
     return f"{BASE_DIR}/data/db/{id}.db"
+
+
+def format_currency(amount: float) -> str:
+    """Format currency with optional decimal places."""
+    if amount % 1 == 0:
+        return f"{amount:,.0f}"
+    else:
+        return f"{amount:,.2f}"

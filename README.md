@@ -1,10 +1,11 @@
 # kasflow
-AI-powered personal expense tracker Telegram bot.
+AI-powered personal expense tracker Telegram bot. Record expenses, view reports, and get insights.
 
 Tech stack:
 - Python Telegram Bot
-- LangGraph (for LLM-powered agents)
-- OpenAI API (for LLM)
+- LangGraph (LLM workflows orchestration)
+- OpenAI API (LLM provider)
+- SQLite (expense records storage)
 
 ## Setup
 
