@@ -1,8 +1,9 @@
+import aiofiles
 from pathlib import Path
 from kasflow.conf import BASE_DIR
 
 
-def read_text_file(path: str, base_dir: Path = BASE_DIR) -> str:
+async def read_text_file(path: str, base_dir: Path = BASE_DIR) -> str:
     """
     Read a text file from the given path relative to kasflow package.
     Args:
@@ -11,8 +12,8 @@ def read_text_file(path: str, base_dir: Path = BASE_DIR) -> str:
         str: The content of the text file.
     """
     filename = base_dir / path
-    with open(filename) as file:
-        return file.read()
+    async with aiofiles.open(filename) as file:
+        return await file.read()
 
 
 def db_path(id: str | int) -> str:

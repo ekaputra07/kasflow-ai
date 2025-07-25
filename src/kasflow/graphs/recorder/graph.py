@@ -23,7 +23,7 @@ _extractor = create_extractor(
 async def extract_node(
     state: RecorderState,
 ) -> RecorderState:
-    prompt = read_text_file("graphs/recorder/prompt.md")
+    prompt = await read_text_file("graphs/recorder/prompt.md")
     messages = [
         SystemMessage(prompt),
         HumanMessage(state.message),
