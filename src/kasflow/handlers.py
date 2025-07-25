@@ -10,6 +10,9 @@ from kasflow.graphs.recorder import RecorderGraph, RecorderState
 
 logger = logging.getLogger(__name__)
 
+# initialize graphs
+recorder = RecorderGraph().compile()
+
 
 async def start(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
     greeting = settings.greeting_message.format(bot_name=settings.bot_name)
@@ -17,8 +20,9 @@ async def start(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
 
 
 async def list_expenses(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
-    if update.effective_user:
-        with DuckDBStore(db_path(update.effective_user.id)) as store:
+    thread_id = update.effective_user.id
+    if thread_id:
+        with DuckDBStore(db_path(thread_id)) as store:
             expenses = store.list_expense()
             formatted_expenses = "\n".join(
                 [f"{e.created.strftime('%b %d %H:%M')} - {format_currency(e.amount)} - {e.description}" for e in expenses]
@@ -27,18 +31,17 @@ async def list_expenses(update: Update, context: ContextTypes.DEFAULT_TYPE) -> N
 
 
 async def message(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
-    if update.effective_user:
-        with DuckDBStore(db_path(update.effective_user.id)) as store:
-            compiled = RecorderGraph().compiled
-            in_state = RecorderState(message=update.message.text)
-            out_state = compiled.invoke(in_state, {"configurable": {"store": store}})
-            if out_state.get("stored"):
-                formatted_expenses = "\n".join(
-                    [f"✓ {format_currency(e.amount)} - {e.description}" for e in out_state["expenses"]]
-                )
+    thread_id = update.effective_user.id
+    if thread_id:
+        with DuckDBStore(db_path(thread_id)) as store:
+            input = RecorderState(message=update.message.text)
+            output = recorder.invoke(input, {"configurable": {"store": store, "thread_id": thread_id}})
+
+            if output.get("stored"):
+                formatted_expenses = "\n".join([f"✓ {format_currency(e.amount)} - {e.description}" for e in output["expenses"]])
                 await update.message.reply_text(formatted_expenses)
-            elif out_state.get("store_exception"):
-                await update.message.reply_text(f"I couldn't store your expense record: {out_state['store_exception']}")
+            elif output.get("store_exception"):
+                await update.message.reply_text(f"I couldn't store your expense record: {output['store_exception']}")
             else:
                 await update.message.reply_text("I don't know what to do with your message.")
 
