@@ -1,5 +1,5 @@
 # kasflow
-AI-powered personal expense tracker Telegram bot. Record expenses, view reports, and get insights.
+AI-powered Telegram bot for personal expense tracking, reporting and insights.
 
 Tech stack:
 - Python Telegram Bot
