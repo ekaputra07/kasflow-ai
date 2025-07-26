@@ -32,6 +32,9 @@ class Expense(BaseModel):
     id: Optional[int] = Field(
         description="Unique identifier for the expense", default=None
     )
+    user_id: Optional[int] = Field(
+        description="Unique identifier for the expense creator", default=None
+    )
     amount: float = Field(
         description="The monetary amount of the expense", ge=0.0
     )

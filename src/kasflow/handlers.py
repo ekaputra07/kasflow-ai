@@ -3,8 +3,8 @@ from telegram import Update
 from telegram.ext import ContextTypes, CommandHandler, MessageHandler
 from telegram.ext import filters
 from kasflow.conf import settings
-from kasflow.utils import db_path, format_currency
-from kasflow.store.aiosqlite import AioSQLiteStore
+from kasflow.utils import db_path, format_currency, is_group_update
+from kasflow.store import init_store
 from kasflow.graphs.recorder import RecorderGraph, RecorderState
 
 logger = logging.getLogger(__name__)
@@ -21,49 +21,69 @@ async def start(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
 async def list_expenses(
     update: Update, context: ContextTypes.DEFAULT_TYPE
 ) -> None:
-    user = update.effective_user
-    if user:
-        async with AioSQLiteStore(db_path(user.id)) as store:
-            expenses = await store.list_expense()
-            if expenses:
-                formatted_expenses = "\n".join(
-                    [
-                        f"{e.created.strftime('%b %d %H:%M')} - {format_currency(e.amount)} - {e.description}"
-                        for e in expenses
-                    ]
-                )
-                await update.message.reply_text(f"{formatted_expenses}")
-            else:
-                await update.message.reply_text("No expenses found.")
+    """
+    List all expenses from user/group in the current chat.
+    - On private user-bot chats, it lists user expenses.
+    - On group chats, it lists group expenses.
+    """
+    message = update.message
+    thread_id = message.chat.id
+    db_ext = ".group.db" if is_group_update(update) else ".user.db"
+
+    async with init_store(db_path(thread_id, db_ext)) as store:
+        expenses = await store.list_expenses()
+        if expenses:
+            formatted_expenses = "\n".join(
+                [
+                    f"{e.created.strftime('%b %d %H:%M')} - {format_currency(e.amount)} - {e.description}"
+                    for e in expenses
+                ]
+            )
+            await update.message.reply_text(f"{formatted_expenses}")
+        else:
+            await update.message.reply_text("No expenses found.")
 
 
 async def message(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
-    user = update.effective_user
-    if user:
-        thread_id = user.id
-        async with AioSQLiteStore(db_path(thread_id)) as store:
-            input = RecorderState(message=update.message.text)
-            output = await recorder.ainvoke(
-                input,
-                {"configurable": {"store": store, "thread_id": thread_id}},
-            )
+    """
+    Create expense(s) for user/group in the current chat.
+    - On private user-bot chats, it creates user expenses.
+    - On group chats, it creates group expenses but each expense
+      is assigned to the user who sent the message.
 
-            if output.get("stored"):
-                formatted_expenses = "\n".join(
-                    [
-                        f"✓ {format_currency(e.amount)} - {e.description}"
-                        for e in output["expenses"]
-                    ]
-                )
-                await update.message.reply_text(formatted_expenses)
-            elif output.get("store_exception"):
-                await update.message.reply_text(
-                    f"I couldn't store your expense record: {output['store_exception']}"
-                )
-            else:
-                await update.message.reply_text(
-                    "I don't know what to do with your message."
-                )
+    Group and user expenses are stored in separate databases.
+    """
+
+    message = update.message
+    thread_id = message.chat.id
+    user_id = message.from_user.id
+    db_ext = ".group.db" if is_group_update(update) else ".user.db"
+
+    async with init_store(db_path(thread_id, ext=db_ext)) as store:
+        input = RecorderState(message=update.message.text)
+        output = await recorder.ainvoke(
+            input,
+            {
+                "configurable": {
+                    "store": store,
+                    "thread_id": thread_id,
+                    "user_id": user_id,
+                }
+            },
+        )
+
+        if output.get("stored"):
+            formatted_expenses = "\n".join(
+                [
+                    f"✓ {format_currency(e.amount)} - {e.description}"
+                    for e in output["expenses"]
+                ]
+            )
+            await update.message.reply_text(formatted_expenses)
+        elif output.get("store_exception"):
+            await update.message.reply_text(
+                f"I couldn't store your expense record: {output['store_exception']}"
+            )
 
 
 all = [

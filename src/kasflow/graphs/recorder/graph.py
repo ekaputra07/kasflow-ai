@@ -22,16 +22,24 @@ _extractor = create_extractor(
 
 async def extract_node(
     state: RecorderState,
+    config: RunnableConfig,
 ) -> RecorderState:
+    user_id = config["configurable"]["user_id"]
     prompt = await read_text_file("graphs/recorder/prompt.md")
+
     messages = [
         SystemMessage(prompt),
         HumanMessage(state.message),
     ]
     result = await _extractor.ainvoke(messages)
+
     for resp in result["responses"]:
         if not isinstance(resp, ExpenseList):
             raise ValueError(f"Expected ExpenseList, got {type(resp)}")
+
+        # assign user_id to each expense
+        for expense in resp.expenses:
+            expense.user_id = user_id
         return {"expenses": resp.expenses}
 
 

@@ -1,5 +1,6 @@
 import aiofiles
 from pathlib import Path
+from telegram import Update
 from kasflow.conf import BASE_DIR
 
 
@@ -16,7 +17,7 @@ async def read_text_file(path: str, base_dir: Path = BASE_DIR) -> str:
         return await file.read()
 
 
-def db_path(id: str | int) -> str:
+def db_path(id: str | int, ext: str = ".db") -> str:
     """
     Return the path to the database file for the given user ID.
     Args:
@@ -24,7 +25,7 @@ def db_path(id: str | int) -> str:
     Returns:
         str: The path to the database file.
     """
-    return f"{BASE_DIR}/data/db/{id}.db"
+    return f"{BASE_DIR}/data/db/{id}{ext}"
 
 
 def format_currency(amount: float) -> str:
@@ -33,3 +34,14 @@ def format_currency(amount: float) -> str:
         return f"{amount:,.0f}"
     else:
         return f"{amount:,.2f}"
+
+
+def is_group_update(update: str) -> bool:
+    """
+    Check if the update is from a group chat.
+    Args:
+        update (Update): The Telegram update object.
+    Returns:
+        bool: True if the update is from a group chat, False otherwise.
+    """
+    return update.message.chat.type in ["group", "supergroup"]
