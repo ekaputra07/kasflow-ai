@@ -1,15 +1,16 @@
 from langchain_core.runnables import RunnableConfig
-from langchain_core.messages import SystemMessage, HumanMessage
+from langchain_core.messages import SystemMessage
 from langgraph.graph import StateGraph, START, END
+from langgraph.checkpoint.memory import InMemorySaver
 
 from kasflow.llm import light_llm
 from kasflow.utils import read_text_file
 from kasflow.graphs.base import BaseGraph
 from kasflow.graphs.recorder import RecorderGraph
 from kasflow.graphs.chat import ChatGraph
-
 from .models import IntentionSchema, MainState
 
+memory = InMemorySaver()
 recorder = RecorderGraph().compiled
 chat = ChatGraph().compiled
 
@@ -21,7 +22,7 @@ async def intention_node(
     prompt = await read_text_file("graphs/main/prompt.md")
     messages = [
         SystemMessage(prompt),
-        HumanMessage(state.message),
+        state.messages[-1],
     ]
     llm = light_llm.with_structured_output(IntentionSchema)
     response = await llm.ainvoke(messages)
@@ -55,4 +56,4 @@ class MainGraph(BaseGraph):
             "intention", intent_conditions, ["chat", "record"]
         )
         graph.add_edge(["chat", "record"], END)
-        return graph.compile()
+        return graph.compile(checkpointer=memory)

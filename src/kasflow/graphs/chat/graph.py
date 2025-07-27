@@ -1,18 +1,22 @@
 from langchain_core.runnables import RunnableConfig
-from langchain_core.messages import SystemMessage, HumanMessage
+from langchain_core.messages import SystemMessage
+from langchain_core.messages.utils import (
+    trim_messages,
+    count_tokens_approximately,
+)
 from langgraph.graph import StateGraph, START, END
 
 from kasflow.conf import settings
 from kasflow.llm import medium_llm
 from kasflow.utils import read_text_file, format_currency
 from kasflow.graphs.base import BaseGraph
-from .models import ChatState
+from kasflow.graphs.main.models import MainState
 
 
 async def chat_node(
-    state: ChatState,
+    state: MainState,
     config: RunnableConfig,
-) -> ChatState:
+) -> MainState:
     prompt = await read_text_file("graphs/chat/prompt.md")
 
     store = config["configurable"]["store"]
@@ -28,17 +32,25 @@ async def chat_node(
         else "No expenses found."
     )
 
+    messages = trim_messages(
+        state.messages,
+        strategy="last",
+        token_counter=count_tokens_approximately,
+        max_tokens=128,
+        start_on="human",
+        end_on=("human", "tool"),
+    )
+
     messages = [
         SystemMessage(
             prompt.format(
                 bot_name=settings.bot_name,
                 expenses=formatted_expenses,
             )
-        ),
-        HumanMessage(state.message),
-    ]
+        )
+    ] + messages
     response = await medium_llm.ainvoke(messages)
-    return {"chat_response": response.content}
+    return {"chat_response": response.content, "messages": [response]}
 
 
 class ChatGraph(BaseGraph):
@@ -47,7 +59,7 @@ class ChatGraph(BaseGraph):
     """
 
     def compile(self) -> StateGraph:
-        graph = StateGraph(ChatState)
+        graph = StateGraph(MainState)
         graph.add_node("chat", chat_node)
         graph.add_edge(START, "chat")
         graph.add_edge("chat", END)

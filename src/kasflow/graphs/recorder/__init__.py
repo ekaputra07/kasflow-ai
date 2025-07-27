@@ -1,3 +1,3 @@
-from .graph import RecorderGraph, RecorderState
+from .graph import RecorderGraph
 
-__all__ = ["RecorderGraph", "RecorderState"]
+__all__ = ["RecorderGraph"]

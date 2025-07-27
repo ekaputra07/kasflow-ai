@@ -2,6 +2,7 @@ import logging
 from telegram import Update
 from telegram.ext import ContextTypes, CommandHandler, MessageHandler
 from telegram.ext import filters
+from langchain_core.messages import HumanMessage
 from kasflow.conf import settings
 from kasflow.utils import db_path, format_currency, is_group_update
 from kasflow.store import init_store
@@ -60,7 +61,7 @@ async def message(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
     db_ext = ".group.db" if is_group_update(update) else ".user.db"
 
     async with init_store(db_path(thread_id, ext=db_ext)) as store:
-        input = MainState(message=update.message.text)
+        input = MainState(messages=[HumanMessage(content=message.text)])
         output = await graph.ainvoke(
             input,
             {

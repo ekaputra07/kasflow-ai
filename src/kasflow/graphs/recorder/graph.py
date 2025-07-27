@@ -1,12 +1,13 @@
 from langchain_core.runnables import RunnableConfig
-from langchain_core.messages import SystemMessage, HumanMessage
+from langchain_core.messages import SystemMessage
 from langgraph.graph import StateGraph, START, END
 from trustcall import create_extractor
 
 from kasflow.llm import medium_llm
 from kasflow.utils import read_text_file
 from kasflow.graphs.base import BaseGraph
-from .models import ExpensesSchema, RecorderState
+from kasflow.graphs.main.models import MainState
+from .models import ExpensesSchema
 
 # create an extractor for ExpensesSchema using medium_llm
 _extractor = create_extractor(
@@ -15,15 +16,15 @@ _extractor = create_extractor(
 
 
 async def extract_node(
-    state: RecorderState,
+    state: MainState,
     config: RunnableConfig,
-) -> RecorderState:
+) -> MainState:
     user_id = config["configurable"]["user_id"]
     prompt = await read_text_file("graphs/recorder/prompt.md")
 
     messages = [
         SystemMessage(prompt),
-        HumanMessage(state.message),
+        state.messages[-1],
     ]
     result = await _extractor.ainvoke(messages)
 
@@ -37,9 +38,7 @@ async def extract_node(
         return {"record_expenses": resp.expenses}
 
 
-async def store_node(
-    state: RecorderState, config: RunnableConfig
-) -> RecorderState:
+async def store_node(state: MainState, config: RunnableConfig) -> MainState:
     expenses = state.record_expenses
     if not expenses:
         return {}
@@ -57,7 +56,7 @@ class RecorderGraph(BaseGraph):
     """
 
     def compile(self) -> StateGraph:
-        graph = StateGraph(RecorderState)
+        graph = StateGraph(MainState)
         graph.add_node("extract", extract_node)
         graph.add_node("store", store_node)
         graph.add_edge(START, "extract")
