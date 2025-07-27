@@ -1,19 +1,12 @@
-from langchain_openai import ChatOpenAI
 from langchain_core.runnables import RunnableConfig
 from langchain_core.messages import SystemMessage, HumanMessage
 from langgraph.graph import StateGraph, START, END
 
 from kasflow.conf import settings
+from kasflow.llm import medium_llm
 from kasflow.utils import read_text_file, format_currency
 from kasflow.graphs.base import BaseGraph
 from .models import ChatState
-
-_llm = ChatOpenAI(
-    model="gpt-4.1-mini",
-    api_key=settings.openai_api_key,
-    temperature=0.0,
-    max_tokens=1000,
-)
 
 
 async def chat_node(
@@ -38,12 +31,13 @@ async def chat_node(
     messages = [
         SystemMessage(
             prompt.format(
-                bot_name=settings.bot_name, expenses=formatted_expenses
+                bot_name=settings.bot_name,
+                expenses=formatted_expenses,
             )
         ),
         HumanMessage(state.message),
     ]
-    response = await _llm.ainvoke(messages)
+    response = await medium_llm.ainvoke(messages)
     return {"chat_response": response.content}
 
 

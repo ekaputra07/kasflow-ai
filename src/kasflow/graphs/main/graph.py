@@ -1,9 +1,8 @@
-from langchain_openai import ChatOpenAI
 from langchain_core.runnables import RunnableConfig
 from langchain_core.messages import SystemMessage, HumanMessage
 from langgraph.graph import StateGraph, START, END
 
-from kasflow.conf import settings
+from kasflow.llm import light_llm
 from kasflow.utils import read_text_file
 from kasflow.graphs.base import BaseGraph
 from kasflow.graphs.recorder import RecorderGraph
@@ -13,13 +12,6 @@ from .models import IntentionSchema, MainState
 
 recorder = RecorderGraph().compiled
 chat = ChatGraph().compiled
-
-_llm = ChatOpenAI(
-    model="gpt-4.1-nano",
-    api_key=settings.openai_api_key,
-    temperature=0.0,
-    max_tokens=1000,
-).with_structured_output(IntentionSchema)
 
 
 async def intention_node(
@@ -31,7 +23,8 @@ async def intention_node(
         SystemMessage(prompt),
         HumanMessage(state.message),
     ]
-    response = await _llm.ainvoke(messages)
+    llm = light_llm.with_structured_output(IntentionSchema)
+    response = await llm.ainvoke(messages)
     return {"intention": response.intention}
 
 

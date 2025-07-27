@@ -1,22 +1,16 @@
-from langchain_openai import ChatOpenAI
 from langchain_core.runnables import RunnableConfig
 from langchain_core.messages import SystemMessage, HumanMessage
 from langgraph.graph import StateGraph, START, END
 from trustcall import create_extractor
 
-from kasflow.conf import settings
+from kasflow.llm import medium_llm
 from kasflow.utils import read_text_file
 from kasflow.graphs.base import BaseGraph
 from .models import ExpensesSchema, RecorderState
 
-_llm = ChatOpenAI(
-    model="gpt-4.1-mini",
-    api_key=settings.openai_api_key,
-    temperature=0.0,
-    max_tokens=1000,
-)
+# create an extractor for ExpensesSchema using medium_llm
 _extractor = create_extractor(
-    _llm, tools=[ExpensesSchema], tool_choice="ExpensesSchema"
+    medium_llm, tools=[ExpensesSchema], tool_choice="ExpensesSchema"
 )
 
 
