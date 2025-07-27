@@ -5,12 +5,12 @@ from telegram.ext import filters
 from kasflow.conf import settings
 from kasflow.utils import db_path, format_currency, is_group_update
 from kasflow.store import init_store
-from kasflow.graphs.recorder import RecorderGraph, RecorderState
+from kasflow.graphs.main import MainGraph, MainState
 
 logger = logging.getLogger(__name__)
 
 # initialize graphs
-recorder = RecorderGraph().compile()
+graph = MainGraph().compiled
 
 
 async def start(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
@@ -60,8 +60,8 @@ async def message(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
     db_ext = ".group.db" if is_group_update(update) else ".user.db"
 
     async with init_store(db_path(thread_id, ext=db_ext)) as store:
-        input = RecorderState(message=update.message.text)
-        output = await recorder.ainvoke(
+        input = MainState(message=update.message.text)
+        output = await graph.ainvoke(
             input,
             {
                 "configurable": {
@@ -72,18 +72,20 @@ async def message(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
             },
         )
 
-        if output.get("stored"):
+        if output.get("record_stored"):
             formatted_expenses = "\n".join(
                 [
                     f"✓ {format_currency(e.amount)} - {e.description}"
-                    for e in output["expenses"]
+                    for e in output["record_expenses"]
                 ]
             )
             await update.message.reply_text(formatted_expenses)
-        elif output.get("store_exception"):
+        elif output.get("record_exception"):
             await update.message.reply_text(
                 f"I couldn't store your expense record: {output['store_exception']}"
             )
+        elif output.get("chat_response"):
+            await update.message.reply_text(output["chat_response"])
 
 
 all = [

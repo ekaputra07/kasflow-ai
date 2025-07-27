@@ -7,7 +7,7 @@ from trustcall import create_extractor
 from kasflow.conf import settings
 from kasflow.utils import read_text_file
 from kasflow.graphs.base import BaseGraph
-from .models import ExpenseList, RecorderState
+from .models import ExpensesSchema, RecorderState
 
 _llm = ChatOpenAI(
     model="gpt-4.1-mini",
@@ -16,7 +16,7 @@ _llm = ChatOpenAI(
     max_tokens=1000,
 )
 _extractor = create_extractor(
-    _llm, tools=[ExpenseList], tool_choice="ExpenseList"
+    _llm, tools=[ExpensesSchema], tool_choice="ExpensesSchema"
 )
 
 
@@ -34,27 +34,27 @@ async def extract_node(
     result = await _extractor.ainvoke(messages)
 
     for resp in result["responses"]:
-        if not isinstance(resp, ExpenseList):
-            raise ValueError(f"Expected ExpenseList, got {type(resp)}")
+        if not isinstance(resp, ExpensesSchema):
+            raise ValueError(f"Expected ExpensesSchema, got {type(resp)}")
 
         # assign user_id to each expense
         for expense in resp.expenses:
             expense.user_id = user_id
-        return {"expenses": resp.expenses}
+        return {"record_expenses": resp.expenses}
 
 
 async def store_node(
     state: RecorderState, config: RunnableConfig
 ) -> RecorderState:
-    expenses = state.expenses
+    expenses = state.record_expenses
     if not expenses:
         return {}
     try:
         store = config["configurable"]["store"]
         await store.create_expense(expenses)
     except Exception as e:
-        return {"store_exception": str(e)}
-    return {"stored": True}
+        return {"record_exception": str(e)}
+    return {"record_stored": True}
 
 
 class RecorderGraph(BaseGraph):

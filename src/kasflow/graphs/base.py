@@ -26,8 +26,8 @@ class BaseGraph(ABC):
         self._compiled_graph = self.compile()
         return self._compiled_graph
 
-    def draw(self) -> None:
+    def draw(self, xray: int = 0) -> None:
         """
         Draw the graph in Mermaid format.
         """
-        return self.compiled.get_graph().draw_mermaid_png()
+        return self.compiled.get_graph(xray=xray).draw_mermaid_png()

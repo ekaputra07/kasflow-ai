@@ -8,7 +8,7 @@ BASE_DIR = Path(__file__).parent
 class Settings(BaseSettings):
     log_level: str = "INFO"
     bot_token: str
-    bot_name: str = "kasflow"
+    bot_name: str = "Kasflow"
     greeting_message: str = (
         "Hello! I'm {bot_name}, your personal expense tracker."
     )

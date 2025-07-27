@@ -2,7 +2,7 @@ from pydantic import BaseModel, Field
 from kasflow.models import Expense
 
 
-class ExpenseList(BaseModel):
+class ExpensesSchema(BaseModel):
     """
     Holds a list of expense record (structured output from LLM).
     """
@@ -12,16 +12,19 @@ class ExpenseList(BaseModel):
     )
 
 
-class RecorderState(ExpenseList):
+class RecorderState(BaseModel):
     """
     State of the recorder graph.
     """
 
     message: str = Field(description="input message from the user")
-    stored: bool = Field(
+    record_stored: bool = Field(
         description="whether the message has been stored", default=False
     )
-    store_exception: str = Field(
+    record_exception: str = Field(
         description="exception message raised during storing the message",
         default="",
+    )
+    record_expenses: list[Expense] = Field(
+        description="A list of expense records", default_factory=list
     )
