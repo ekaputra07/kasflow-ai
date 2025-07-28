@@ -17,7 +17,7 @@ async def read_text_file(path: str, base_dir: Path = BASE_DIR) -> str:
         return await file.read()
 
 
-def db_path(id: str | int, ext: str = ".db") -> str:
+def database_path(id: str | int, ext: str = ".db") -> str:
     """
     Return the path to the database file for the given user ID.
     Args:
@@ -36,7 +36,7 @@ def format_currency(amount: float) -> str:
         return f"{amount:,.2f}"
 
 
-def is_group_update(update: str) -> bool:
+def is_group_update(update: Update) -> bool:
     """
     Check if the update is from a group chat.
     Args:

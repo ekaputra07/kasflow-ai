@@ -18,6 +18,9 @@ class MainState(BaseModel):
         description="List of messages in the conversation",
         default_factory=list,
     )
+    db_path: str = Field(
+        description="Path to the database (mostly for the tools to use)"
+    )
 
     # -- set by the intention node
     intention: Literal["chat", "record"] = Field(

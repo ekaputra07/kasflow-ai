@@ -4,7 +4,7 @@ from telegram.ext import ContextTypes, CommandHandler, MessageHandler
 from telegram.ext import filters
 from langchain_core.messages import HumanMessage
 from kasflow.conf import settings
-from kasflow.utils import db_path, format_currency, is_group_update
+from kasflow.utils import database_path, format_currency, is_group_update
 from kasflow.store import init_store
 from kasflow.graphs.main import MainGraph, MainState
 
@@ -30,8 +30,9 @@ async def list_expenses(
     message = update.message
     thread_id = message.chat.id
     db_ext = ".group.db" if is_group_update(update) else ".user.db"
+    db_path = database_path(thread_id, ext=db_ext)
 
-    async with init_store(db_path(thread_id, db_ext)) as store:
+    async with init_store(db_path) as store:
         expenses = await store.list_expenses()
         if expenses:
             formatted_expenses = "\n".join(
@@ -56,12 +57,19 @@ async def message(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
     """
 
     message = update.message
+    if not message:
+        return
+
     thread_id = message.chat.id
     user_id = message.from_user.id
     db_ext = ".group.db" if is_group_update(update) else ".user.db"
+    db_path = database_path(thread_id, ext=db_ext)
 
-    async with init_store(db_path(thread_id, ext=db_ext)) as store:
-        input = MainState(messages=[HumanMessage(content=message.text)])
+    async with init_store(db_path) as store:
+        input = MainState(
+            db_path=db_path,
+            messages=[HumanMessage(content=message.text)],
+        )
         output = await graph.ainvoke(
             input,
             {
