@@ -1,10 +1,6 @@
 # Kasflow 🤖
 AI-powered Telegram bot for personal expense tracking, reporting and insights.
 
-**Why I built this?**
-
-Recently I stumbled upon [Langgraph](https://langchain-ai.github.io/langgraph/concepts/why-langgraph/) for AI application development. Keen to try it myself and my favorite way to learn is to build **real project** that I'll actually use. Develop an expense tracking bot on Telegram platform seems like good and viable idea.
-
 ```
 Disclaimer:
 - For personal use only, might not suitable for large records (backed by SQLite database).
@@ -12,7 +8,7 @@ Disclaimer:
 - Feel free to fork and extend to suite your need. Contributions to this project are always welcomed.
 ```
 
-**Features:**
+**👉 Features:**
 - Record your expenses in natural language (tested on English and Indonesian).
 - Multi-turn conversations.
 - Can be added to Group (for group expense tracking).
@@ -21,14 +17,18 @@ Disclaimer:
 
 <a href="https://youtube.com/shorts/w70JmlZWY9g?feature=share" target="_blank">![](https://github.com/ekaputra07/kasflow-ai/blob/main/demo.gif)</a>
 
-**Limitations:**
+**👉 Why I built this?**
+
+Recently I stumbled upon [Langgraph](https://langchain-ai.github.io/langgraph/concepts/why-langgraph/) for AI application development. Keen to try it myself and my favorite way to learn is to build **real project** that I'll actually use. Develop an expense tracking bot on Telegram platform seems like good and viable idea.
+
+**👉 Limitations:**
 - Tested only on conversation in English and Indonesian. Let me know it it works with your language too.
 - Tested only on `GPT-4.1-*` models, may or may not work on other models.
 - Limited Telegram commands (more added soon).
 - For simplicity it uses SQLite, might not scale well.
 - Uses very basic RAG system, might not perform well on large expense records.
 
-**Tech stack:**
+**👉 Tech stack:**
 - [Python Telegram Bot](https://python-telegram-bot.org/)
 - [LangGraph](https://langchain-ai.github.io/langgraph/concepts/why-langgraph/) (LLM workflows orchestration)
 - OpenAI API (LLM provider)
