@@ -3,16 +3,17 @@ AI-powered Telegram bot for personal expense tracking, reporting and insights.
 
 **Why I built this?**
 
-Recently I'm learning [Langgraph](https://langchain-ai.github.io/langgraph/concepts/why-langgraph/) for AI application development and my favorite way to learn is to build **real project** that I'll use myself. Develop an expense tracking bot on Telegram platform seems like good and viable idea.
+Recently I stumbled upon [Langgraph](https://langchain-ai.github.io/langgraph/concepts/why-langgraph/) for AI application development. Keen to try it myself and my favorite way to learn is to build **real project** that I'll actually use. Develop an expense tracking bot on Telegram platform seems like good and viable idea.
 
 ```
+Disclaimer:
 - For personal use only, might not suitable for large records (backed by SQLite database).
 - Currently no managed hosting solution so you have to host and run yourself.
 - Feel free to fork and extend to suite your need. Contributions to this project are always welcomed.
 ```
 
 **Features:**
-- Record your expenses in natural language.
+- Record your expenses in natural language (tested on English and Indonesian).
 - Multi-turn conversation.
 - Can be added to Group (for group expense tracking).
 - Each user and group expense records are stored in separate database.
