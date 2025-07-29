@@ -3,7 +3,7 @@ import aiofiles
 from datetime import datetime, UTC
 from pathlib import Path
 from telegram import Update
-from kasflow.conf import BASE_DIR
+from kasflow.conf import BASE_DIR, settings
 
 logger = logging.getLogger(__name__)
 
@@ -36,7 +36,7 @@ def database_path(id: str | int, ext: str = ".db") -> str:
     Returns:
         str: The path to the database file.
     """
-    return f"{BASE_DIR}/data/db/{id}{ext}"
+    return f"{settings.data_dir}/{id}{ext}"
 
 
 def format_currency(amount: float) -> str:

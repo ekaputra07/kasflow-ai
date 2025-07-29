@@ -72,14 +72,3 @@ BOT_NAME=Kasflow
 ```bash
 docker-compose up
 ```
-
-3. Or build and run manually:
-```bash
-# Build the image
-docker build -t kasflow .
-
-# Run the container
-docker run -it --rm --env-file .env -v $(pwd)/src/kasflow/data:/app/src/kasflow/data kasflow
-```
-
-The Docker setup uses UV for dependency management and as the entry point, ensuring consistent behavior across environments.

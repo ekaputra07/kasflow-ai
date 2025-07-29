@@ -4,7 +4,9 @@ services:
     container_name: kasflow-bot
     restart: unless-stopped
     volumes:
-      # Mount data directory for SQLite databases
-      - ./src/kasflow/data:/app/src/kasflow/data
+      - ./src/kasflow:/app/src/kasflow
+      - ./data:/app/data
+    environment:
+      - DATA_DIR=/app/data
     env_file:
       - .env 

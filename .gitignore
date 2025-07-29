@@ -209,5 +209,5 @@ __marimo__/
 # MacOS
 .DS_Store
 
-# Kasflow
-/src/kasflow/data/db/*.db
+# Kasflow data
+/data/*.db

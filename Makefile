@@ -5,4 +5,4 @@ test:
 	uv run pytest
 
 run:
-	uv run kasflow
+	export DATA_DIR=$(PWD)/data && uv run kasflow

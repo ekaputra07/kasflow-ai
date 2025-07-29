@@ -13,6 +13,7 @@ class Settings(BaseSettings):
         "Hello! I'm {bot_name}, your personal expense tracker."
     )
     openai_api_key: str
+    data_dir: str = "/tmp"
 
     class Config:
         env_file = ".env"
