@@ -5,6 +5,6 @@ services:
     restart: unless-stopped
     volumes:
       # Mount data directory for SQLite databases
-      - ./data:/app/data
+      - ./src/kasflow/data:/app/src/kasflow/data
     env_file:
       - .env 

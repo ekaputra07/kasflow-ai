@@ -79,7 +79,7 @@ docker-compose up
 docker build -t kasflow .
 
 # Run the container
-docker run --env-file .env -v $(pwd)/data:/app/data kasflow
+docker run -it --rm --env-file .env -v $(pwd)/src/kasflow/data:/app/src/kasflow/data kasflow
 ```
 
 The Docker setup uses UV for dependency management and as the entry point, ensuring consistent behavior across environments.
