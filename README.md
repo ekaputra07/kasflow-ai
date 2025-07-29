@@ -21,6 +21,7 @@ Recently I'm learning [Langgraph](https://langchain-ai.github.io/langgraph/conce
 <a href="https://youtube.com/shorts/w70JmlZWY9g?feature=share" target="_blank">![](https://github.com/ekaputra07/kasflow-ai/blob/main/demo.gif)</a>
 
 **Limitations:**
+- Tested only on conversation in English and Indonesian. Let me know it it works with your language too.
 - Tested only on `GPT-4.1-*` models, may or may not work on other models.
 - Limited Telegram commands (more added soon).
 - For simplicity it uses SQLite, might not scale well.
