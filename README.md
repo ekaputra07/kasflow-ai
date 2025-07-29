@@ -1,5 +1,5 @@
 # Kasflow 🤖
-AI-powered Telegram bot for personal expense tracking, reporting and insights.
+**Kasflow (play on the word "_Cash flow_")**: an AI-powered Telegram bot for personal expense tracking, reporting and insights.
 
 ```
 Disclaimer:
