@@ -17,13 +17,13 @@ Disclaimer:
 
 <a href="https://youtube.com/shorts/w70JmlZWY9g?feature=share" target="_blank">![](https://github.com/ekaputra07/kasflow-ai/blob/main/demo.gif)</a>
 
-**👉 Why I built this?**
+**👉 Why built this?**
 
-Recently I stumbled upon [Langgraph](https://langchain-ai.github.io/langgraph/concepts/why-langgraph/) for AI application development. Keen to try it myself and my favorite way to learn is to build **real project** that I'll actually use. Develop an expense tracking bot on Telegram platform seems like good and viable idea.
+Recently I stumbled upon [Langgraph](https://langchain-ai.github.io/langgraph/concepts/why-langgraph/) for AI application development. Keen to try it out myself and to build a **real project** that I'll actually use is the most fun way to learn. Develop an expense tracking bot on Telegram platform seems like good and viable idea.
 
 **👉 Limitations:**
 - Tested only on conversation in English and Indonesian. Let me know it it works with your language too.
-- Tested only on `GPT-4.1-*` models, may or may not work on other models.
+- Tested only on `GPT-4.1-*` models, may or may not work on other models and providers.
 - Limited Telegram commands (more added soon).
 - For simplicity it uses SQLite, might not scale well.
 - Uses very basic RAG system, might not perform well on large expense records.
