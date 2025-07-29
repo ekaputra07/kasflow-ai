@@ -1,6 +1,7 @@
 import os
 import logging
 import aiosqlite
+from datetime import datetime
 
 from kasflow.store.base import AsyncBaseStore
 from kasflow.models import Expense
@@ -71,9 +72,27 @@ class AioSQLiteStore(AsyncBaseStore):
         rows = await self._conn.execute_fetchall(query)
         return [self._row_to_expense(row) for row in rows]
 
+    async def list_expenses_by_date_range(
+        self, from_datetime: datetime, to_datetime: datetime
+    ) -> list[Expense]:
+        query = "SELECT * FROM expenses WHERE created BETWEEN ? AND ? ORDER BY id DESC"
+        rows = await self._conn.execute_fetchall(
+            query, (from_datetime, to_datetime)
+        )
+        return [self._row_to_expense(row) for row in rows]
+
     async def list_user_expenses(self, user_id: int) -> list[Expense]:
         query = "SELECT * FROM expenses WHERE user_id = ? ORDER BY id DESC"
         rows = await self._conn.execute_fetchall(query, (user_id,))
+        return [self._row_to_expense(row) for row in rows]
+
+    async def list_user_expenses_by_date_range(
+        self, user_id: int, from_datetime: datetime, to_datetime: datetime
+    ) -> list[Expense]:
+        query = "SELECT * FROM expenses WHERE user_id = ? AND created BETWEEN ? AND ? ORDER BY id DESC"
+        rows = await self._conn.execute_fetchall(
+            query, (user_id, from_datetime, to_datetime)
+        )
         return [self._row_to_expense(row) for row in rows]
 
     async def create_expense(self, expense: Expense | list[Expense]):

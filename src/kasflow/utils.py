@@ -1,7 +1,18 @@
+import logging
 import aiofiles
+from datetime import datetime, UTC
 from pathlib import Path
 from telegram import Update
 from kasflow.conf import BASE_DIR
+
+logger = logging.getLogger(__name__)
+
+
+def now() -> datetime:
+    """
+    Returns the current date and time in the UTC timezone.
+    """
+    return datetime.now(UTC)
 
 
 async def read_text_file(path: str, base_dir: Path = BASE_DIR) -> str:
