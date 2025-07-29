@@ -1,0 +1,10 @@
+services:
+  kasflow:
+    build: .
+    container_name: kasflow-bot
+    restart: unless-stopped
+    volumes:
+      # Mount data directory for SQLite databases
+      - ./data:/app/data
+    env_file:
+      - .env 

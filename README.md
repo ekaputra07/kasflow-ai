@@ -36,6 +36,8 @@ Recently I stumbled upon [Langgraph](https://langchain-ai.github.io/langgraph/co
 
 ## Setup
 
+### Option 1: Local Development
+
 Make sure you have [UV](https://docs.astral.sh/uv/) installed.
 
 1. Install dependencies:
@@ -45,10 +47,39 @@ make deps
 
 2. Create a `.env` file:
 ```bash
-cp .env.example .env
+# Required environment variables:
+BOT_TOKEN=your-telegram-token
+OPENAI_API_KEY=your-openai-api-key
+BOT_NAME=Kasflow
 ```
 
 3. Run the bot:
 ```bash
 make run
 ```
+
+### Option 2: Docker
+
+1. Create a `.env` file with your configuration:
+```bash
+# Required environment variables:
+BOT_TOKEN=your-telegram-token
+OPENAI_API_KEY=your_openai_api_key_here
+BOT_NAME=Kasflow
+```
+
+2. Build and run with Docker Compose:
+```bash
+docker-compose up
+```
+
+3. Or build and run manually:
+```bash
+# Build the image
+docker build -t kasflow .
+
+# Run the container
+docker run --env-file .env -v $(pwd)/data:/app/data kasflow
+```
+
+The Docker setup uses UV for dependency management and as the entry point, ensuring consistent behavior across environments.
