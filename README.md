@@ -14,7 +14,7 @@ Disclaimer:
 
 **Features:**
 - Record your expenses in natural language (tested on English and Indonesian).
-- Multi-turn conversation.
+- Multi-turn conversations.
 - Can be added to Group (for group expense tracking).
 - Each user and group expense records are stored in separate database.
 - Telegram command to list all expenses.
