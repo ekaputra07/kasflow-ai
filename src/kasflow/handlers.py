@@ -23,8 +23,6 @@ UNAUTHORIZED_MESSAGE = "You are not authorized to use this bot."
 
 async def start(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
     message = update.message
-    if not message:
-        return
 
     if not is_authorized(update):
         await message.reply_text(UNAUTHORIZED_MESSAGE)
@@ -43,8 +41,6 @@ async def list_expenses(
     - On group chats, it lists group expenses.
     """
     message = update.message
-    if not message:
-        return
 
     if not is_authorized(update):
         await message.reply_text(UNAUTHORIZED_MESSAGE)
@@ -78,8 +74,6 @@ async def message(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
     Group and user expenses are stored in separate databases.
     """
     message = update.message
-    if not message:
-        return
 
     if not is_authorized(update):
         await message.reply_text(UNAUTHORIZED_MESSAGE)
@@ -123,7 +117,18 @@ async def message(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
 
 
 all = [
-    CommandHandler("start", start),
-    CommandHandler("list", list_expenses),
-    MessageHandler(filters.TEXT, message),
+    CommandHandler(
+        command="start",
+        callback=start,
+        filters=~filters.UpdateType.EDITED_MESSAGE,
+    ),
+    CommandHandler(
+        command="list",
+        callback=list_expenses,
+        filters=~filters.UpdateType.EDITED_MESSAGE,
+    ),
+    MessageHandler(
+        filters=(filters.TEXT & ~filters.UpdateType.EDITED_MESSAGE),
+        callback=message,
+    ),
 ]
