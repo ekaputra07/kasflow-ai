@@ -1,6 +1,6 @@
 from typing import Literal
 from pathlib import Path
-from pydantic_settings import BaseSettings
+from pydantic_settings import BaseSettings, SettingsConfigDict
 
 # Kasflow base directory
 BASE_DIR = Path(__file__).parent
@@ -15,6 +15,8 @@ class Settings(BaseSettings):
     bot_name: str = "Kasflow"
     bot_mode: Literal["polling", "webhook"] = "polling"
     bot_greeting: str = "Hello! I'm {bot_name}, your personal expense tracker."
+    bot_authorized_users: list[int] = []
+    bot_authorized_groups: list[int] = []
 
     # webhook settings (when `bot_mode` is `webhook`)
     bot_webhook_url: str = ""
@@ -22,12 +24,15 @@ class Settings(BaseSettings):
     bot_webhook_port: int = 8443
     bot_webhook_host: str = "0.0.0.0"
 
+    # LLM settings
     openai_api_key: str
 
-    class Config:
-        env_file = ".env"
-        env_file_encoding = "utf-8"
-        extra = "allow"
+    # pydantic settings
+    model_config = SettingsConfigDict(
+        env_file=".env",
+        env_file_encoding="utf-8",
+        extra="allow",
+    )
 
 
 settings = Settings()

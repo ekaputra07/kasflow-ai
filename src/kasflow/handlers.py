@@ -4,7 +4,12 @@ from telegram.ext import ContextTypes, CommandHandler, MessageHandler
 from telegram.ext import filters
 from langchain_core.messages import HumanMessage
 from kasflow.conf import settings
-from kasflow.utils import database_path, format_currency, is_group_update
+from kasflow.utils import (
+    database_path,
+    format_currency,
+    is_group_update,
+    is_authorized,
+)
 from kasflow.store import init_store
 from kasflow.graphs.main import MainGraph, MainState
 
@@ -13,10 +18,20 @@ logger = logging.getLogger(__name__)
 # initialize graphs
 graph = MainGraph().compiled
 
+UNAUTHORIZED_MESSAGE = "You are not authorized to use this bot."
+
 
 async def start(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
+    message = update.message
+    if not message:
+        return
+
+    if not is_authorized(update):
+        await message.reply_text(UNAUTHORIZED_MESSAGE)
+        return
+
     greeting = settings.bot_greeting.format(bot_name=settings.bot_name)
-    await update.message.reply_text(greeting)
+    await message.reply_text(greeting)
 
 
 async def list_expenses(
@@ -28,6 +43,13 @@ async def list_expenses(
     - On group chats, it lists group expenses.
     """
     message = update.message
+    if not message:
+        return
+
+    if not is_authorized(update):
+        await message.reply_text(UNAUTHORIZED_MESSAGE)
+        return
+
     thread_id = message.chat.id
     db_ext = ".group.db" if is_group_update(update) else ".user.db"
     db_path = database_path(thread_id, ext=db_ext)
@@ -55,9 +77,12 @@ async def message(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
 
     Group and user expenses are stored in separate databases.
     """
-
     message = update.message
     if not message:
+        return
+
+    if not is_authorized(update):
+        await message.reply_text(UNAUTHORIZED_MESSAGE)
         return
 
     thread_id = message.chat.id
@@ -68,7 +93,7 @@ async def message(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
     async with init_store(db_path) as store:
         input = MainState(
             db_path=db_path,
-            messages=[HumanMessage(content=message.text)],
+            messages=[HumanMessage(content=message.text.lstrip("/"))],
         )
         output = await graph.ainvoke(
             input,

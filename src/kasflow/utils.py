@@ -56,3 +56,18 @@ def is_group_update(update: Update) -> bool:
         bool: True if the update is from a group chat, False otherwise.
     """
     return update.message.chat.type in ["group", "supergroup"]
+
+
+def is_authorized(update: Update) -> bool:
+    """
+    Check if the user is authorized to use the bot.
+    """
+    message = update.message
+    chat_id = message.chat.id
+    # group chats
+    if is_group_update(update) and settings.bot_authorized_groups:
+        return chat_id in settings.bot_authorized_groups
+    # private chats
+    if not is_group_update(update) and settings.bot_authorized_users:
+        return chat_id in settings.bot_authorized_users
+    return True
