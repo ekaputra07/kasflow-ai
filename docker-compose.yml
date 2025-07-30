@@ -6,6 +6,8 @@ services:
     volumes:
       - ./src/kasflow:/app/src/kasflow
       - ./data:/app/data
+    ports:
+      - 8443:8443
     environment:
       - DATA_DIR=/app/data
     env_file:

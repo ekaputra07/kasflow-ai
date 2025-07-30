@@ -15,7 +15,7 @@ graph = MainGraph().compiled
 
 
 async def start(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
-    greeting = settings.greeting_message.format(bot_name=settings.bot_name)
+    greeting = settings.bot_greeting.format(bot_name=settings.bot_name)
     await update.message.reply_text(greeting)
 
 
