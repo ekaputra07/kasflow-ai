@@ -4,13 +4,9 @@ from telegram.ext import ContextTypes, CommandHandler, MessageHandler
 from telegram.ext import filters
 from langchain_core.messages import HumanMessage
 from kasflow.conf import settings
-from kasflow.utils import (
-    database_path,
-    format_currency,
-    is_group_update,
-    is_authorized,
-)
-from kasflow.store import init_store
+from kasflow.utils import format_currency, is_authorized
+from kasflow.db.repository import ExpenseRepository
+from kasflow.db.session import sessionmaker
 from kasflow.graphs.main import MainGraph, MainState
 
 logger = logging.getLogger(__name__)
@@ -47,15 +43,14 @@ async def list_expenses(
         return
 
     thread_id = message.chat.id
-    db_ext = ".group.db" if is_group_update(update) else ".user.db"
-    db_path = database_path(thread_id, ext=db_ext)
 
-    async with init_store(db_path) as store:
-        expenses = await store.list_expenses()
+    async with sessionmaker() as session:
+        repo = ExpenseRepository(session)
+        expenses = await repo.list_by_thread_id(thread_id)
         if expenses:
             formatted_expenses = "\n".join(
                 [
-                    f"{e.created.strftime('%b %d %H:%M')} - {format_currency(e.amount)} - {e.description}"
+                    f"{e.created_at.strftime('%b %d %H:%M')} - {format_currency(e.amount)} - {e.description}"
                     for e in expenses
                 ]
             )
@@ -81,39 +76,32 @@ async def message(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
 
     thread_id = message.chat.id
     user_id = message.from_user.id
-    db_ext = ".group.db" if is_group_update(update) else ".user.db"
-    db_path = database_path(thread_id, ext=db_ext)
 
-    async with init_store(db_path) as store:
-        input = MainState(
-            db_path=db_path,
-            messages=[HumanMessage(content=message.text.lstrip("/"))],
-        )
-        output = await graph.ainvoke(
-            input,
-            {
-                "configurable": {
-                    "store": store,
-                    "thread_id": thread_id,
-                    "user_id": user_id,
-                }
-            },
-        )
+    input = MainState(
+        thread_id=thread_id,
+        user_id=user_id,
+        messages=[HumanMessage(content=message.text.lstrip("/"))],
+    )
 
-        if output.get("record_stored"):
-            formatted_expenses = "\n".join(
-                [
-                    f"✓ {format_currency(e.amount)} - {e.description}"
-                    for e in output["record_expenses"]
-                ]
-            )
-            await update.message.reply_text(formatted_expenses)
-        elif output.get("record_exception"):
-            await update.message.reply_text(
-                f"I couldn't store your expense record: {output['store_exception']}"
-            )
-        elif output.get("chat_response"):
-            await update.message.reply_text(output["chat_response"])
+    output = await graph.ainvoke(
+        input,
+        {"configurable": {"thread_id": thread_id}},
+    )
+
+    if output.get("record_stored"):
+        formatted_expenses = "\n".join(
+            [
+                f"✓ {format_currency(e['amount'])} - {e['description']}"
+                for e in output["record_expenses"]
+            ]
+        )
+        await update.message.reply_text(formatted_expenses)
+    elif output.get("record_exception"):
+        await update.message.reply_text(
+            f"I couldn't store your expense record: {output['record_exception']}"
+        )
+    elif output.get("chat_response"):
+        await update.message.reply_text(output["chat_response"])
 
 
 all = [

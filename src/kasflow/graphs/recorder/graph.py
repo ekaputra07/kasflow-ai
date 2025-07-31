@@ -1,12 +1,15 @@
-from langchain_core.runnables import RunnableConfig
 from langchain_core.messages import SystemMessage
 from langgraph.graph import StateGraph, START, END
 from trustcall import create_extractor
 
 from kasflow.llm import medium_llm
 from kasflow.utils import read_text_file
+from kasflow.db.repository import ExpenseRepository
+from kasflow.db.session import sessionmaker
+from kasflow.db.models import Expense
 from kasflow.graphs.base import BaseGraph
 from kasflow.graphs.main.models import MainState
+
 from .models import ExpensesSchema
 
 # create an extractor for ExpensesSchema using medium_llm
@@ -15,11 +18,7 @@ _extractor = create_extractor(
 )
 
 
-async def extract_node(
-    state: MainState,
-    config: RunnableConfig,
-) -> MainState:
-    user_id = config["configurable"]["user_id"]
+async def extract_node(state: MainState) -> MainState:
     prompt = await read_text_file("graphs/recorder/prompt.md")
 
     messages = [
@@ -28,23 +27,34 @@ async def extract_node(
     ]
     result = await _extractor.ainvoke(messages)
 
+    expenses = []
     for resp in result["responses"]:
         if not isinstance(resp, ExpensesSchema):
             raise ValueError(f"Expected ExpensesSchema, got {type(resp)}")
 
-        # assign user_id to each expense
         for expense in resp.expenses:
-            expense.user_id = user_id
-        return {"record_expenses": resp.expenses}
+            expenses.append(expense.model_dump())
+
+    return {"record_expenses": expenses}
 
 
-async def store_node(state: MainState, config: RunnableConfig) -> MainState:
-    expenses = state.record_expenses
+async def store_node(state: MainState) -> MainState:
+    expenses = [
+        Expense(
+            thread_id=state.thread_id,
+            user_id=state.user_id,
+            amount=expense["amount"],
+            category=expense["category"],
+            description=expense["description"],
+        )
+        for expense in state.record_expenses
+    ]
     if not expenses:
         return {}
     try:
-        store = config["configurable"]["store"]
-        await store.create_expense(expenses)
+        async with sessionmaker() as session:
+            repo = ExpenseRepository(session)
+            await repo.create(expenses)
     except Exception as e:
         return {"record_exception": str(e)}
     return {"record_stored": True}

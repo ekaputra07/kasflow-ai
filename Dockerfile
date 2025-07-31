@@ -6,6 +6,8 @@ COPY --from=ghcr.io/astral-sh/uv:0.8.3 /uv /uvx /bin/
 # Set working directory
 WORKDIR /app
 
+ARG DB_ENGINE=sqlite
+
 # Set environment variables
 ENV PYTHONUNBUFFERED=1
 ENV PYTHONDONTWRITEBYTECODE=1
@@ -19,7 +21,7 @@ COPY uv.lock pyproject.toml ./
 COPY src/ ./src/
 
 # Install only production dependencies using UV
-RUN uv sync --frozen --no-dev --no-cache
+RUN uv sync --extra $DB_ENGINE --frozen --no-dev --no-cache 
 
 # Create a non-root user
 RUN useradd --create-home --shell /bin/bash app && chown -R app:app /app

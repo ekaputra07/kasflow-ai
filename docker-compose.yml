@@ -1,6 +1,9 @@
 services:
   kasflow:
-    build: .
+    build:
+      context: .
+      args:
+        - DB_ENGINE=sqlite # sqlite or postgres
     container_name: kasflow-bot
     restart: unless-stopped
     volumes:
@@ -8,7 +11,5 @@ services:
       - ./data:/app/data
     ports:
       - 8443:8443
-    environment:
-      - DATA_DIR=/app/data
     env_file:
-      - .env 
+      - .env

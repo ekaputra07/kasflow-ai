@@ -1,4 +1,3 @@
-from langchain_core.runnables import RunnableConfig
 from langchain_core.messages import SystemMessage
 from langgraph.graph import StateGraph, START, END
 from langgraph.checkpoint.memory import InMemorySaver
@@ -15,10 +14,7 @@ recorder = RecorderGraph().compiled
 chat = ChatGraph().compiled
 
 
-async def intention_node(
-    state: MainState,
-    config: RunnableConfig,
-) -> MainState:
+async def intention_node(state: MainState) -> MainState:
     prompt = await read_text_file("graphs/main/prompt.md")
     messages = [
         SystemMessage(prompt),

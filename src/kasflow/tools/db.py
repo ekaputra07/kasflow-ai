@@ -3,7 +3,8 @@ from typing import Annotated
 from langchain_core.tools import tool
 from langgraph.prebuilt import InjectedState
 
-from kasflow.store import init_store
+from kasflow.db.session import sessionmaker
+from kasflow.db.repository import ExpenseRepository
 from kasflow.utils import format_currency
 
 
@@ -11,7 +12,7 @@ from kasflow.utils import format_currency
 async def list_expenses(
     from_datetime: str,
     to_datetime: str,
-    db_path: Annotated[str, InjectedState("db_path")],
+    thread_id: Annotated[int, InjectedState("thread_id")],
 ) -> str:
     """
     Get a list of all expenses between two dates.
@@ -24,9 +25,11 @@ async def list_expenses(
     from_ = datetime.strptime(from_datetime, "%Y-%m-%d %H:%M:%S")
     to_ = datetime.strptime(to_datetime, "%Y-%m-%d %H:%M:%S")
 
-    async with init_store(db_path) as store:
-        expenses = await store.list_expenses_by_date_range(
-            from_datetime=from_, to_datetime=to_
+    expenses = []
+    async with sessionmaker() as session:
+        repo = ExpenseRepository(session)
+        expenses = await repo.list_by_thread_id_and_date_range(
+            thread_id=thread_id, from_date=from_, to_date=to_
         )
         if not expenses:
             return (
@@ -35,7 +38,7 @@ async def list_expenses(
 
         items = "\n".join(
             [
-                f"{e.created.strftime('%b %d %H:%M')} - {format_currency(e.amount)} - {e.description}"
+                f"{e.created_at.strftime('%b %d %H:%M')} - {format_currency(e.amount)} - {e.description}"
                 for e in expenses
             ]
         )

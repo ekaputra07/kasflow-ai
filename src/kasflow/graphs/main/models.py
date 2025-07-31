@@ -3,8 +3,6 @@ from pydantic import BaseModel, Field
 from langchain_core.messages import AnyMessage
 from langgraph.graph import add_messages
 
-from kasflow.models import Expense
-
 
 class IntentionSchema(BaseModel):
     intention: Literal["chat", "record"] = Field(
@@ -18,8 +16,11 @@ class MainState(BaseModel):
         description="List of messages in the conversation",
         default_factory=list,
     )
-    db_path: str = Field(
-        description="Path to the database (mostly for the tools to use)"
+    thread_id: int = Field(
+        description="Thread ID of the conversation",
+    )
+    user_id: int = Field(
+        description="User ID of the user",
     )
 
     # -- set by the intention node
@@ -34,7 +35,7 @@ class MainState(BaseModel):
     )
 
     # -- set by the recorder graph
-    record_expenses: list[Expense] = Field(
+    record_expenses: list[dict] = Field(
         description="A list of expense records", default_factory=list
     )
     record_stored: bool = Field(

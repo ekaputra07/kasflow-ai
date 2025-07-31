@@ -9,6 +9,7 @@ BASE_DIR = Path(__file__).parent
 class Settings(BaseSettings):
     log_level: str = "INFO"
     data_dir: str = "/tmp"
+    database_url: str = "sqlite+aiosqlite:///data/kasflow.db"
 
     # basic bot settings
     bot_token: str
