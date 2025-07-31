@@ -5,7 +5,6 @@ from langgraph.prebuilt import InjectedState
 
 from kasflow.db.session import sessionmaker
 from kasflow.db.repository import ExpenseRepository
-from kasflow.utils import format_currency
 
 
 @tool
@@ -32,16 +31,9 @@ async def list_expenses(
             thread_id=thread_id, from_date=from_, to_date=to_
         )
         if not expenses:
-            return (
-                f"No expenses found between {from_datetime} and {to_datetime}"
-            )
+            return f"No expenses found between {from_datetime} and {to_datetime}"
 
-        items = "\n".join(
-            [
-                f"{e.created_at.strftime('%b %d %H:%M')} - {format_currency(e.amount)} - {e.description}"
-                for e in expenses
-            ]
-        )
+        items = "\n".join([e.as_list_item() for e in expenses])
         return f"""
         List of expenses between {from_datetime} and {to_datetime}:
         {items}

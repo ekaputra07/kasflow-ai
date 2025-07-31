@@ -27,12 +27,8 @@ class ExpenseSchema(BaseModel):
 
     model_config = ConfigDict(use_enum_values=True)
 
-    amount: float = Field(
-        description="The monetary amount of the expense", ge=0.0
-    )
-    category: ExpenseCategory = Field(
-        description="The category this expense belongs to"
-    )
+    amount: float = Field(description="The monetary amount of the expense", ge=0.0)
+    category: ExpenseCategory = Field(description="The category this expense belongs to")
     description: str = Field(
         description="A brief description of the expense",
         min_length=1,

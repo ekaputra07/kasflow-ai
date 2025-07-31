@@ -15,5 +15,5 @@
             ]
         }
     },
-    "ruff.lineLength": 79
+    "ruff.lineLength": 100
 }

@@ -28,9 +28,7 @@ async def start(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
     await message.reply_text(greeting)
 
 
-async def list_expenses(
-    update: Update, context: ContextTypes.DEFAULT_TYPE
-) -> None:
+async def list_expenses(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
     """
     List all expenses from user/group in the current chat.
     - On private user-bot chats, it lists user expenses.
@@ -48,12 +46,7 @@ async def list_expenses(
         repo = ExpenseRepository(session)
         expenses = await repo.list_by_thread_id(thread_id)
         if expenses:
-            formatted_expenses = "\n".join(
-                [
-                    f"{e.created_at.strftime('%b %d %H:%M')} - {format_currency(e.amount)} - {e.description}"
-                    for e in expenses
-                ]
-            )
+            formatted_expenses = "\n".join([e.as_list_item() for e in expenses])
             await update.message.reply_text(f"{formatted_expenses}")
         else:
             await update.message.reply_text("No expenses found.")

@@ -3,6 +3,8 @@ from sqlalchemy import String, Integer, Float, DateTime, Index
 from sqlalchemy.orm import DeclarativeBase, Mapped, mapped_column
 from sqlalchemy.ext.asyncio import AsyncAttrs
 
+from kasflow.utils import format_currency
+
 
 class Base(AsyncAttrs, DeclarativeBase):
     pass
@@ -11,9 +13,7 @@ class Base(AsyncAttrs, DeclarativeBase):
 class Expense(Base):
     __tablename__ = "expenses"
 
-    id: Mapped[int] = mapped_column(
-        Integer, primary_key=True, autoincrement=True
-    )
+    id: Mapped[int] = mapped_column(Integer, primary_key=True, autoincrement=True)
     thread_id: Mapped[int] = mapped_column(Integer, nullable=False)
     user_id: Mapped[int] = mapped_column(Integer, nullable=False)
     amount: Mapped[float] = mapped_column(Float, nullable=False)
@@ -46,3 +46,6 @@ class Expense(Base):
             f"category={self.category}, description={self.description}, "
             f"created_at={self.created_at}, updated_at={self.updated_at})",
         )
+
+    def as_list_item(self) -> str:
+        return f"{self.created_at.strftime('%b %d %H:%M')} - {format_currency(self.amount)} - {self.description}"  # noqa: E501

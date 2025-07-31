@@ -13,9 +13,7 @@ from kasflow.graphs.main.models import MainState
 from .models import ExpensesSchema
 
 # create an extractor for ExpensesSchema using medium_llm
-_extractor = create_extractor(
-    medium_llm, tools=[ExpensesSchema], tool_choice="ExpensesSchema"
-)
+_extractor = create_extractor(medium_llm, tools=[ExpensesSchema], tool_choice="ExpensesSchema")
 
 
 async def extract_node(state: MainState) -> MainState:

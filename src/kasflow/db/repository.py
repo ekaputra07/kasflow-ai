@@ -34,9 +34,7 @@ class ExpenseRepository:
         List all expenses by thread ID.
         """
         result = await self.session.execute(
-            select(Expense)
-            .where(Expense.thread_id == thread_id)
-            .order_by(Expense.id.desc())
+            select(Expense).where(Expense.thread_id == thread_id).order_by(Expense.id.desc())
         )
         return result.scalars().all()
 

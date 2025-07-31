@@ -4,6 +4,16 @@ deps:
 test:
 	uv run pytest
 
+check:
+	uv run ruff check
+
+format:
+	uv run ruff format
+
+fix:
+	uv run ruff check --fix
+
+
 # usage: make db.migrations.generate name="create expenses table"
 db.migrations.generate:
 	uv run alembic revision --autogenerate -m "$(name)"

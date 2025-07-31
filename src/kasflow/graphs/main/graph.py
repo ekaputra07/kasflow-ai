@@ -38,7 +38,8 @@ def intent_conditions(state: MainState) -> str:
 class MainGraph(BaseGraph):
     """
     Main graph for routing subgraphs based on user intention.
-    It detects the user's intention (chat or record) and routes to the appropriate subgraph.
+    It detects the user's intention (chat or record) and routes
+    to the appropriate subgraph.
     """
 
     def compile(self) -> StateGraph:
@@ -48,8 +49,6 @@ class MainGraph(BaseGraph):
         graph.add_node("record", recorder)
 
         graph.add_edge(START, "intention")
-        graph.add_conditional_edges(
-            "intention", intent_conditions, ["chat", "record"]
-        )
+        graph.add_conditional_edges("intention", intent_conditions, ["chat", "record"])
         graph.add_edge(["chat", "record"], END)
         return graph.compile(checkpointer=memory)
