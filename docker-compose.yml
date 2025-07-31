@@ -5,7 +5,6 @@ services:
       args:
         - DB_ENGINE=sqlite # sqlite or postgres
     container_name: kasflow-bot
-    restart: unless-stopped
     volumes:
       - ./src/kasflow:/app/src/kasflow
       - ./data:/app/data

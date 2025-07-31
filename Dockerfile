@@ -15,7 +15,7 @@ ENV UV_PROJECT_ENVIRONMENT="/app/.venv"
 ENV PATH="/app/.venv/bin:$PATH"
 
 # Copy UV lock file and project configuration
-COPY uv.lock pyproject.toml ./
+COPY uv.lock pyproject.toml alembic.ini ./
 
 # Copy source code
 COPY src/ ./src/

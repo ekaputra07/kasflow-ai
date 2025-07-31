@@ -29,4 +29,4 @@ db.migrations.down:
 	uv run alembic downgrade -1
 
 run:
-	export DATA_DIR=$(PWD)/data && uv run kasflow
+	uv run kasflow
