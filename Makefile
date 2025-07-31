@@ -1,3 +1,5 @@
+IMAGE_NAME=ekaputra07/kasflow
+
 deps:
 	uv sync --extra sqlite
 
@@ -30,3 +32,27 @@ db.migrations.down:
 
 run:
 	uv run kasflow
+
+# usage: make docker.release v=1.0.0
+docker.release:
+	# build and release kasflow[sqlite] image
+	echo "Building $(IMAGE_NAME):latest-sqlite and $(IMAGE_NAME):$(v)-sqlite"
+	docker build -t $(IMAGE_NAME):latest-sqlite \
+				 -t $(IMAGE_NAME):$(v)-sqlite \
+				 --build-arg DB_ENGINE=sqlite \
+				 .
+
+	echo "Pushing $(IMAGE_NAME):latest-sqlite and $(IMAGE_NAME):$(v)-sqlite"
+	docker push $(IMAGE_NAME):latest-sqlite
+	docker push $(IMAGE_NAME):$(v)-sqlite
+
+	# build and release kasflow[postgres] image
+	echo "Building $(IMAGE_NAME):latest-postgres and $(IMAGE_NAME):$(v)-postgres"
+	docker build -t $(IMAGE_NAME):latest-postgres \
+				 -t $(IMAGE_NAME):$(v)-postgres \
+				 --build-arg DB_ENGINE=postgres \
+				 .
+
+	echo "Pushing $(IMAGE_NAME):latest-postgres and $(IMAGE_NAME):$(v)-postgres"
+	docker push $(IMAGE_NAME):latest-postgres
+	docker push $(IMAGE_NAME):$(v)-postgres
