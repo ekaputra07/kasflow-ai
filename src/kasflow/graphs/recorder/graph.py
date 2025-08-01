@@ -63,11 +63,11 @@ class RecorderGraph(BaseGraph):
     Recorder graph for extracting expenses from user messages.
     """
 
-    def compile(self) -> StateGraph:
+    def compile(self, **kwargs) -> StateGraph:
         graph = StateGraph(MainState)
         graph.add_node("extract", extract_node)
         graph.add_node("store", store_node)
         graph.add_edge(START, "extract")
         graph.add_edge("extract", "store")
         graph.add_edge("store", END)
-        return graph.compile()
+        return graph.compile(**kwargs)

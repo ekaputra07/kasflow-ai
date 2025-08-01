@@ -2,8 +2,6 @@ services:
   kasflow:
     build:
       context: .
-      args:
-        - DB_ENGINE=sqlite # sqlite or postgres
     container_name: kasflow-bot
     volumes:
       - ./src/kasflow:/app/src/kasflow

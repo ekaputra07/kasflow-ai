@@ -44,7 +44,7 @@ class ChatGraph(BaseGraph):
     Chat graph for handling user messages and generating responses.
     """
 
-    def compile(self) -> StateGraph:
+    def compile(self, **kwargs) -> StateGraph:
         graph = StateGraph(MainState)
 
         # nodes
@@ -56,4 +56,4 @@ class ChatGraph(BaseGraph):
         graph.add_conditional_edges("chat", tools_condition)
         graph.add_edge("tools", "chat")
         graph.add_edge("chat", END)
-        return graph.compile()
+        return graph.compile(**kwargs)

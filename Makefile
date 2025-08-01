@@ -1,7 +1,7 @@
 IMAGE_NAME=ekaputra07/kasflow
 
 deps:
-	uv sync --extra sqlite
+	uv sync
 
 test:
 	uv run pytest
@@ -31,7 +31,10 @@ db.migrations.down:
 	uv run alembic downgrade -1
 
 run:
-	uv run kasflow
+	uv run kasflow --mode polling
+
+migrate:
+	uv run kasflow --mode=migrate --alembic alembic.ini
 
 # usage: make docker.release v=1.0.0
 docker.release:

@@ -1,6 +1,5 @@
 from langchain_core.messages import SystemMessage
 from langgraph.graph import StateGraph, START, END
-from langgraph.checkpoint.memory import InMemorySaver
 
 from kasflow.llm import light_llm
 from kasflow.utils import read_text_file
@@ -9,7 +8,6 @@ from kasflow.graphs.recorder import RecorderGraph
 from kasflow.graphs.chat import ChatGraph
 from .models import IntentionSchema, MainState
 
-memory = InMemorySaver()
 recorder = RecorderGraph().compiled
 chat = ChatGraph().compiled
 
@@ -42,7 +40,7 @@ class MainGraph(BaseGraph):
     to the appropriate subgraph.
     """
 
-    def compile(self) -> StateGraph:
+    def compile(self, **kwargs) -> StateGraph:
         graph = StateGraph(MainState)
         graph.add_node("intention", intention_node)
         graph.add_node("chat", chat)
@@ -51,4 +49,4 @@ class MainGraph(BaseGraph):
         graph.add_edge(START, "intention")
         graph.add_conditional_edges("intention", intent_conditions, ["chat", "record"])
         graph.add_edge(["chat", "record"], END)
-        return graph.compile(checkpointer=memory)
+        return graph.compile(**kwargs)

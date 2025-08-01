@@ -7,10 +7,11 @@ app = 'kasflow'
 primary_region = 'sin'
 
 [build.args]
-  DB_ENGINE="postgres"
+  mode="webhook"
+  extra="memory-postgres"
 
 [deploy]
-  release_command = "/app/.venv/bin/alembic upgrade head"
+  release_command = "kasflow --mode=migrate"
 
 [http_service]
   internal_port = 8443

@@ -3,6 +3,7 @@ from telegram import Update
 from telegram.ext import ContextTypes, CommandHandler, MessageHandler
 from telegram.ext import filters
 from langchain_core.messages import HumanMessage
+
 from kasflow.conf import settings
 from kasflow.utils import format_currency, is_authorized
 from kasflow.db.repository import ExpenseRepository
@@ -11,8 +12,6 @@ from kasflow.graphs.main import MainGraph, MainState
 
 logger = logging.getLogger(__name__)
 
-# initialize graphs
-graph = MainGraph().compiled
 
 UNAUTHORIZED_MESSAGE = "You are not authorized to use this bot."
 
@@ -70,31 +69,34 @@ async def message(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
     thread_id = message.chat.id
     user_id = message.from_user.id
 
-    input = MainState(
-        thread_id=thread_id,
-        user_id=user_id,
-        messages=[HumanMessage(content=message.text.lstrip("/"))],
-    )
+    async with settings.memory_saver_class.from_conn_string(settings.memory_url) as checkpointer:
+        graph = MainGraph(checkpointer=checkpointer).compiled
 
-    output = await graph.ainvoke(
-        input,
-        {"configurable": {"thread_id": thread_id}},
-    )
+        input = MainState(
+            thread_id=thread_id,
+            user_id=user_id,
+            messages=[HumanMessage(content=message.text.lstrip("/"))],
+        )
 
-    if output.get("record_stored"):
-        formatted_expenses = "\n".join(
-            [
-                f"✓ {format_currency(e['amount'])} - {e['description']}"
-                for e in output["record_expenses"]
-            ]
+        output = await graph.ainvoke(
+            input,
+            {"configurable": {"thread_id": thread_id}},
         )
-        await update.message.reply_text(formatted_expenses)
-    elif output.get("record_exception"):
-        await update.message.reply_text(
-            f"I couldn't store your expense record: {output['record_exception']}"
-        )
-    elif output.get("chat_response"):
-        await update.message.reply_text(output["chat_response"])
+
+        if output.get("record_stored"):
+            formatted_expenses = "\n".join(
+                [
+                    f"✓ {format_currency(e['amount'])} - {e['description']}"
+                    for e in output["record_expenses"]
+                ]
+            )
+            await update.message.reply_text(formatted_expenses)
+        elif output.get("record_exception"):
+            await update.message.reply_text(
+                f"I couldn't store your expense record: {output['record_exception']}"
+            )
+        elif output.get("chat_response"):
+            await update.message.reply_text(output["chat_response"])
 
 
 all = [

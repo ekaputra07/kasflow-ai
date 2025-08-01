@@ -9,8 +9,11 @@ class BaseGraph(ABC):
 
     _compiled_graph: StateGraph | None = None
 
+    def __init__(self, **compile_kwargs):
+        self.compile_kwargs = compile_kwargs
+
     @abstractmethod
-    def compile(self) -> StateGraph:
+    def compile(self, **kwargs) -> StateGraph:
         """
         Respond to a greeting.
         """
@@ -23,7 +26,7 @@ class BaseGraph(ABC):
         """
         if self._compiled_graph:
             return self._compiled_graph
-        self._compiled_graph = self.compile()
+        self._compiled_graph = self.compile(**self.compile_kwargs)
         return self._compiled_graph
 
     def draw(self, xray: int = 0) -> None:
