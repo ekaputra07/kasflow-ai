@@ -27,4 +27,4 @@ RUN uv sync --extra $DB_ENGINE --frozen --no-dev --no-cache
 RUN useradd --create-home --shell /bin/bash app && chown -R app:app /app
 USER app
 
-ENTRYPOINT ["kasflow"]
+CMD ["kasflow"]
