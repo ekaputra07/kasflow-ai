@@ -31,10 +31,10 @@ db.migrations.down:
 	uv run alembic downgrade -1
 
 run:
-	uv run kasflow --mode polling
+	uv run kasflow
 
 migrate:
-	uv run kasflow --mode=migrate --alembic alembic.ini
+	uv run kasflow --migrate --alembic-config alembic.ini
 
 # usage: make docker.release v=1.0.0
 docker.release:

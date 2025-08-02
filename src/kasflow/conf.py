@@ -1,4 +1,4 @@
-from typing import Type
+from typing import Literal, Type
 from pathlib import Path
 from pydantic_settings import BaseSettings, SettingsConfigDict
 from langgraph.checkpoint.base import BaseCheckpointSaver
@@ -15,6 +15,7 @@ class Settings(BaseSettings):
     # basic bot settings
     bot_token: str
     bot_name: str = "Kasflow"
+    bot_mode: Literal["polling", "webhook"] = "polling"
     bot_greeting: str = "Hello! I'm {bot_name}, your personal expense tracker."
     bot_authorized_users: list[int] = []
     bot_authorized_groups: list[int] = []

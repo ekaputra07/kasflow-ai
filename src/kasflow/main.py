@@ -1,7 +1,6 @@
 import logging
 import argparse
 import asyncio
-from typing import Literal
 from telegram.ext import ApplicationBuilder
 from alembic.config import Config
 from alembic import command
@@ -32,9 +31,10 @@ async def run_memory_setup():
         logger.error(f"Error during memory setup: {e}")
 
 
-def run_bot(mode: Literal["polling", "webhook"]):
+def run_bot():
     app = ApplicationBuilder().token(settings.bot_token).build()
     app.add_handlers(all)
+    mode = settings.bot_mode
 
     if mode == "polling":
         app.run_polling()
@@ -51,22 +51,21 @@ def run_bot(mode: Literal["polling", "webhook"]):
 def run():
     parser = argparse.ArgumentParser()
     parser.add_argument(
-        "--mode",
-        type=str,
-        default="polling",
-        choices=["polling", "webhook", "migrate"],
-        help="Run the bot in polling or webhook mode or run db migrations",
+        "--migrate",
+        action="store_true",
+        default=False,
+        help="Run the migrations to the latest version by specifying Alembic.ini path",
     )
     parser.add_argument(
-        "--alembic",
+        "--alembic-config",
         type=str,
         default="alembic.ini",
-        help="Path to alembic.ini file",
+        help="Path to alembic.ini file (required when --migrate is used)",
     )
     args = parser.parse_args()
 
-    if args.mode == "migrate":
-        run_db_migrations(args.alembic)
+    if args.migrate:
+        run_db_migrations(args.alembic_config)
         asyncio.run(run_memory_setup())
     else:
-        run_bot(args.mode)
+        run_bot()

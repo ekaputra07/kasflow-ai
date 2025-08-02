@@ -913,6 +913,9 @@ dependencies = [
 ]
 
 [package.optional-dependencies]
+db-postgres = [
+    { name = "psycopg", extra = ["binary"] },
+]
 memory-postgres = [
     { name = "langgraph-checkpoint-postgres" },
     { name = "psycopg", extra = ["binary", "pool"] },
@@ -940,6 +943,7 @@ requires-dist = [
     { name = "langgraph-checkpoint-postgres", marker = "extra == 'memory-postgres'", specifier = "==2.0.23" },
     { name = "langgraph-checkpoint-redis", marker = "extra == 'memory-redis'", specifier = "==0.0.8" },
     { name = "langgraph-checkpoint-sqlite", specifier = "==2.0.11" },
+    { name = "psycopg", extras = ["binary"], marker = "extra == 'db-postgres'", specifier = "==3.2.9" },
     { name = "psycopg", extras = ["binary", "pool"], marker = "extra == 'memory-postgres'", specifier = "==3.2.9" },
     { name = "pydantic", specifier = "==2.11.7" },
     { name = "pydantic-settings", specifier = "==2.10.1" },
@@ -947,7 +951,7 @@ requires-dist = [
     { name = "sqlalchemy", extras = ["asyncio"], specifier = "==2.0.42" },
     { name = "trustcall", specifier = "==0.0.39" },
 ]
-provides-extras = ["memory-postgres", "memory-redis"]
+provides-extras = ["db-postgres", "memory-postgres", "memory-redis"]
 
 [package.metadata.requires-dev]
 dev = [

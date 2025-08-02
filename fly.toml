@@ -7,11 +7,10 @@ app = 'kasflow'
 primary_region = 'sin'
 
 [build.args]
-  mode="webhook"
-  extra="memory-postgres"
+  uv_args="--extra db-postgres --extra memory-postgres"
 
 [deploy]
-  release_command = "kasflow --mode=migrate"
+  release_command = "kasflow --migrate"
 
 [http_service]
   internal_port = 8443
